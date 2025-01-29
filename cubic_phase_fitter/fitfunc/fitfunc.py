@@ -1,5 +1,5 @@
 import numpy as np
-from permutations import permO1, permO2, permO3, permO4, permE1, permE2, permE3, permE4
+from .permutations import permO1, permO2, permO3, permO4, permE1, permE2, permE3, permE4
 
 def D_nodal_approx(x, y, z, lamb):
     term1 = (permE1(1, 1, 1, x, y, z, lamb) +

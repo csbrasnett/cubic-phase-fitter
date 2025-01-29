@@ -2,4 +2,5 @@ MDAnalysis
 numpy
 tqdm
 scipy
-skimage
+scikit-image
+lmfit

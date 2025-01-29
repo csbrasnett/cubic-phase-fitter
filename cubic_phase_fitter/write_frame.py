@@ -1,5 +1,5 @@
 import numpy as np
-from mda.Universe import empty
+from MDAnalysis import Universe
 
 
 def write_frame(surface, frame_positions, cutting, point_inds, opstr,
@@ -15,11 +15,11 @@ def write_frame(surface, frame_positions, cutting, point_inds, opstr,
     new_names = np.concatenate((atomnames, opstr))
     new_resnames = np.concatenate((resnames, np.array(['SUR'])))
 
-    u1 = empty(n_atoms=all_points.shape[0],
-               n_residues=int(new_resids[-1]) + 1,
-               atom_resindex=new_resids,
-               trajectory=True
-               )
+    u1 = Universe.empty(n_atoms=all_points.shape[0],
+                        n_residues=int(new_resids[-1]) + 1,
+                        atom_resindex=new_resids,
+                        trajectory=True
+                        )
 
     u1.add_TopologyAttr('names', new_names)
     u1.add_TopologyAttr('resname', new_resnames)

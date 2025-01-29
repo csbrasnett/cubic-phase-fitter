@@ -1,5 +1,5 @@
 import numpy as np
-from terms import *
+from .terms import *
 
 def derivative(x, y, z, lamb):
     t1 =           term1(x, y, z, lamb)

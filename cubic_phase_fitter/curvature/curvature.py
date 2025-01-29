@@ -1,5 +1,5 @@
 import numpy as np
-from derivative import derivative
+from .derivative import derivative
 
 def nominator(F_x, F_y, F_z, F_xx, F_xy, F_yy, F_yz, F_zz, F_xz):
     m = np.array([[F_xx, F_xy, F_xz, F_x],

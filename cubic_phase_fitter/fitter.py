@@ -1,4 +1,4 @@
-from fitfunc.fitfunc import fitfunc
+from .fitfunc.fitfunc import fitfunc
 from lmfit import Minimizer, Parameters
 import numpy as np
 
@@ -34,8 +34,8 @@ def fitter(terminal_positions, dimensions):
             # print('success')
             result = iter_result
             fit_success = True
-    if counter == 5:
-        continue
+    # if counter == 5:
+    #     continue
 
     if fit_success:
         return result

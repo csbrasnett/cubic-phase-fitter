@@ -1,5 +1,5 @@
 import numpy as np
-from fitfunc.fitfunc import D_nodal_approx
+from .fitfunc.fitfunc import D_nodal_approx
 from skimage import measure
 
 def point_generator(pos, l):
