@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 29 12:48:51 2025
+
+@author: chris
+"""
+
+import MDAnalysis as mda
+import numpy as np
+from tqdm import tqdm
+import pickle
+
+from scipy.spatial import KDTree
+
+from cubic_phase_fitter.curvature import curvature_calculation
+from cubic_phase_fitter.fitter import fitter
+from cubic_phase_fitter.translations import translations
+from cubic_phase_fitter.point_generation import point_generator
+from cubic_phase_fitter.write_frame import write_frame
+
+import argparse
+from pathlib import Path
+
+def cubic_phase_fitter():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-f', dest="trajectory", type=Path, default='prod.xtc', help="trajectory file to analyse")
+    parser.add_argument('-s', dest="topology", type=Path, default='prod.tpr', help="trajectory file to analyse")
+    parser.add_argument('-res', dest='target_resname', type=str, help="target resname")
+    parser.add_argument('-aname', dest='target_atomname', type=str, help='target atomnames')
+    parser.add_argument('-write-frame', dest='frame_writing', const='store_false', default=True,
+                        help='write out frame containing fitted surface')
+    parser.add_argument('-', dest='lipid_closest_point', const='store_false', default=True,
+                        help='find the closest points on the surface to the input lipid')
+
+    args = parser.parse_args()
+
+    u = mda.Universe(args.topology, args.trajectory)
+
+    resindices = u.atoms.resindices
+    resnames = u.atoms.resnames
+    atomnames = u.atoms.names
+
+    terminal_MO_beads = u.select_atoms('resname MO and name C4A')
+
+    if args.lipid_closest_point:
+        target_indices = u.select_atoms(f'resname {args.target_resname} and name {args.target_atomnames}').atoms.indices
+
+    results = {}
+    for ts in tqdm(u.trajectory[::100]):
+
+        result = fitter(terminal_MO_beads.positions, u.dimensions)
+
+        if result is not None:
+            initial_transformed = translations(result.params, u.atoms.positions)
+
+            #find the points on the surface
+            surface_points = point_generator(np.array(initial_transformed.mean(axis=0))[0], result.params['scale'].value)
+
+            if surface_points is not None:
+                # to guarantee we'll have 5000 points for the surface each time
+                cutting = np.linspace(0, surface_points.shape[0] - 1, 5000, dtype=int)
+
+                curvatures, curvature_bins, mids_curvature_bins, point_inds, opstr = curvature_calculation(surface_points,
+                                                                                                           initial_transformed,
+                                                                                                           result,
+                                                                                                           cutting)
+
+                # translate the data points by the difference between half the lattice parameter and the mean positions
+                # so that the origin of the box is at 0.
+                corrected_data_points = initial_transformed - np.repeat((initial_transformed.mean(axis=0) -
+                                                                        result.params['scale'].value),
+                                                                        len(initial_transformed),
+                                                                        axis=0)
+
+                #translate the surface points in the same way
+                corrected_surface_points = surface_points + surface_points.mean(axis=0)
+
+                if args.frame_writing:
+
+                    write_frame(corrected_surface_points, corrected_data_points,
+                                cutting, point_inds, opstr,
+                                resindices, atomnames, resnames,
+                                u.trajectory.time)
+
+                if args.lipid_closest_point:
+
+                    target_atom_pos = corrected_data_points[target_indices]
+                    tree = KDTree(corrected_surface_points, boxsize=u.dimensions)
+                    closest_distances, closest_surface_indices = tree.query(target_atom_pos, distance_upper_bound=50)
+
+                    '''
+                    take the curvatures that have been used for the final surface points
+                    digitize them
+                    extract the indices that have been found to be the closest to different tail points
+                    find the unique values and count them
+        
+                    out[0] is +1 to the index of mids_curvature_bins 
+                    out[1] is the count for that bin of curvature
+                    '''
+                    out = np.unique(np.digitize(curvatures[point_inds],
+                                                curvature_bins)[closest_surface_indices.astype(int)],
+                                    return_counts=True)
+
+                    curvature_result = (mids_curvature_bins, out,
+                                        np.histogram(curvatures[point_inds], curvature_bins)[0])
+                    results[int(ts.time)] = curvature_result
+
+    if args.lipid_closest_point:
+        pickle.dump(results, open('results.p', 'wb'))

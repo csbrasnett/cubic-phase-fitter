@@ -1,0 +1,5 @@
+MDAnalysis
+numpy
+tqdm
+scipy
+skimage
