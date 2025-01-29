@@ -28,10 +28,12 @@ def cubic_phase_fitter():
 
     parser.add_argument('-f', dest="trajectory", type=Path, default='prod.xtc', help="trajectory file to analyse")
     parser.add_argument('-s', dest="topology", type=Path, default='prod.tpr', help="trajectory file to analyse")
-    parser.add_argument('-res', dest='target_resname', type=str, help="target resname")
-    parser.add_argument('-aname', dest='target_atomnames', type=str, help='target atomnames', nargs='*')
     parser.add_argument('-write-frame', dest='frame_writing', action='store_true', default=False,
                         help='write out frame containing fitted surface')
+    parser.add_argument('-res', dest='target_resname', type=str, help="target resname of dopant lipid")
+    parser.add_argument('-aname', dest='target_atomnames', type=str, nargs='*',
+                        help=('target atomnames of dopant lipids for curvature distribution.'
+                              'accepts multiple arguments for beads, eg -aname C4A C4B'))
     parser.add_argument('-curvature', dest='lipid_closest_point', action='store_true', default=False,
                         help='find the closest points on the surface to the input lipid')
 
@@ -40,8 +42,9 @@ def cubic_phase_fitter():
     u = mda.Universe(args.topology, args.trajectory)
 
     resindices = u.atoms.resindices
-    resnames = u.atoms.resnames
+    resnames = u.residues.resnames
     atomnames = u.atoms.names
+    atom_resinds = u.residues.resindices
 
     terminal_MO_beads = u.select_atoms('resname MO and name C4A')
 
@@ -66,24 +69,23 @@ def cubic_phase_fitter():
                                                                                                            initial_transformed,
                                                                                                            result,
                                                                                                            cutting)
-                print(curvatures)
-    #
-    #             # translate the data points by the difference between half the lattice parameter and the mean positions
-    #             # so that the origin of the box is at 0.
-    #             corrected_data_points = initial_transformed - np.repeat((initial_transformed.mean(axis=0) -
-    #                                                                     result.params['scale'].value),
-    #                                                                     len(initial_transformed),
-    #                                                                     axis=0)
-    #
-    #             #translate the surface points in the same way
-    #             corrected_surface_points = surface_points + surface_points.mean(axis=0)
-    #
-    #             if args.frame_writing:
-    #
-    #                 write_frame(corrected_surface_points, corrected_data_points,
-    #                             cutting, point_inds, opstr,
-    #                             resindices, atomnames, resnames,
-    #                             u.trajectory.time)
+
+                # translate the data points by the difference between half the lattice parameter and the mean positions
+                # so that the origin of the box is at 0.
+                corrected_data_points = initial_transformed - np.repeat((initial_transformed.mean(axis=0) -
+                                                                        result.params['scale'].value),
+                                                                        len(initial_transformed),
+                                                                        axis=0)
+
+                #translate the surface points in the same way
+                corrected_surface_points = surface_points + surface_points.mean(axis=0)
+
+                if args.frame_writing:
+
+                    write_frame(corrected_surface_points, corrected_data_points,
+                                cutting, point_inds, opstr,
+                                resindices, atomnames, resnames, atom_resinds,
+                                u.trajectory.time)
     #
     #             if args.lipid_closest_point:
     #
