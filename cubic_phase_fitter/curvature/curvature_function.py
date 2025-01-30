@@ -23,7 +23,7 @@ def curvature_calculation(surface_points, initial_transformed, result, cutting):
     # the few values >0 are O(10-7) or so, so it's very small
     curvatures = -np.abs(curvatures)
 
-    curvature_bins = np.linspace(-0.0015, 0, 50)
+    curvature_bins = np.linspace(-0.0012, 0, 50)
     mids_curvature_bins = (curvature_bins[:-1] + curvature_bins[1:]) / 2
 
     inds = np.digitize(curvatures, curvature_bins)

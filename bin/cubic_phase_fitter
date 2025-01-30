@@ -5,22 +5,21 @@ Created on Wed Jan 29 12:48:51 2025
 
 @author: chris
 """
+import argparse
+from pathlib import Path
 
 import MDAnalysis as mda
 import numpy as np
 from tqdm import tqdm
 import pickle
 
-from scipy.spatial import KDTree
-
 from cubic_phase_fitter.curvature import curvature_calculation
 from cubic_phase_fitter.fitter import fitter
 from cubic_phase_fitter.translations import translations
 from cubic_phase_fitter.point_generation import point_generator
 from cubic_phase_fitter.write_frame import write_frame
+from cubic_phase_fitter.molecule_curvature import molecule_curvature
 
-import argparse
-from pathlib import Path
 
 def cubic_phase_fitter():
 
@@ -51,8 +50,8 @@ def cubic_phase_fitter():
     if args.lipid_closest_point:
         target_indices = u.select_atoms(f'resname {args.target_resname} and name {" ".join(args.target_atomnames)}').atoms.indices
 
-    # results = {}
-    for ts in tqdm(u.trajectory[::100]):
+    results = {}
+    for ts in tqdm(u.trajectory[::50]):
 
         result = fitter(terminal_MO_beads.positions, u.dimensions)
 
@@ -81,38 +80,20 @@ def cubic_phase_fitter():
                 corrected_surface_points = surface_points + surface_points.mean(axis=0)
 
                 if args.frame_writing:
-
                     write_frame(corrected_surface_points, corrected_data_points,
                                 cutting, point_inds, opstr,
                                 resindices, atomnames, resnames, atom_resinds,
                                 u.trajectory.time)
-    #
-    #             if args.lipid_closest_point:
-    #
-    #                 target_atom_pos = corrected_data_points[target_indices]
-    #                 tree = KDTree(corrected_surface_points, boxsize=u.dimensions)
-    #                 closest_distances, closest_surface_indices = tree.query(target_atom_pos, distance_upper_bound=50)
-    #
-    #                 '''
-    #                 take the curvatures that have been used for the final surface points
-    #                 digitize them
-    #                 extract the indices that have been found to be the closest to different tail points
-    #                 find the unique values and count them
-    #
-    #                 out[0] is +1 to the index of mids_curvature_bins
-    #                 out[1] is the count for that bin of curvature
-    #                 '''
-    #                 out = np.unique(np.digitize(curvatures[point_inds],
-    #                                             curvature_bins)[closest_surface_indices.astype(int)],
-    #                                 return_counts=True)
-    #
-    #                 curvature_result = (mids_curvature_bins, out,
-    #                                     np.histogram(curvatures[point_inds], curvature_bins)[0])
-    #                 results[int(ts.time)] = curvature_result
-    #
-    # if args.lipid_closest_point:
-    #     pickle.dump(results, open('results.p', 'wb'))
 
+                if args.lipid_closest_point:
+                    curvature_result = molecule_curvature(corrected_data_points, corrected_surface_points,
+                                                          target_indices, curvatures, curvature_bins,
+                                                          mids_curvature_bins, point_inds, cutting)
+
+                    results[int(ts.time)] = curvature_result
+
+    if args.lipid_closest_point:
+        pickle.dump(results, open('results.p', 'wb'))
 
 if __name__ == '__main__':
     cubic_phase_fitter()
