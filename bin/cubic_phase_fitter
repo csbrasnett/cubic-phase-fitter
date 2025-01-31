@@ -51,8 +51,7 @@ def cubic_phase_fitter():
         target_indices = u.select_atoms(f'resname {args.target_resname} and name {" ".join(args.target_atomnames)}').atoms.indices
 
     results = {}
-    for ts in tqdm(u.trajectory[::50]):
-
+    for ts in tqdm(u.trajectory[::10]):
         result = fitter(terminal_MO_beads.positions, u.dimensions)
 
         if result is not None:
