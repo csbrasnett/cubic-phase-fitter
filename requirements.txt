@@ -1,6 +1,0 @@
-MDAnalysis
-numpy
-tqdm
-scipy
-scikit-image
-lmfit
