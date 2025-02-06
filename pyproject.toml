@@ -1,6 +1,29 @@
+
+[project]
+name='LipidCubicPhases'
+version='0.0.1-alpha'
+dependencies = [
+    "pbr",
+    "vermouth>=0.9.6",
+    ]
+keywords = ["molecular dynamics", "martini"]
+authors = [{name = "Christopher Brasnett", email="c.s.brasnett@rug.nl"}]
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "Apache 2.0"}
+requires-python = ">=3.8"
+
 [build-system]
 requires = [
         "wheel",
         "setuptools",
-        "pbr"
+        "pbr",
+        "numpy>=1.26.4",
+        "MDAnalysis",
+        "tqdm",
+        "scipy",
+        "scikit-image",
+        "lmfit"
     ]
+
+[project.scripts]
+cubicphasefitter = 'cubic_phase_fitter:main.cubic_phase_fitter'
