@@ -44,4 +44,4 @@ def fitter(terminal_positions, dimensions):
         C_i_array = fitfunc(p_out, terminal_positions, alt_return=True)
         return result, C_i_array
     else:
-        return None
+        return None, None

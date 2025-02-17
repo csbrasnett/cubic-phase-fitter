@@ -7,15 +7,13 @@ def point_generator(pos, l):
     Generate a D surface based on some input positions
     '''
 
-    x_mean = pos[0]
-    y_mean = pos[1]
-    z_mean = pos[2]
-
+    x_mean, y_mean, z_mean = pos
     try:
         # define the mgrid from which to generate the points
         X, Y, Z = np.mgrid[x_mean - (l / 2):x_mean + (l / 2):(l * 1j),
                            y_mean - (l / 2):y_mean + (l / 2):(l * 1j),
                            z_mean - (l / 2):z_mean + (l / 2):(l * 1j)]
+
     except MemoryError:
         return None
 
