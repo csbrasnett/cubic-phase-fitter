@@ -51,17 +51,20 @@ def cubic_phase_fitter():
         target_indices = u.select_atoms(f'resname {args.target_resname} and name {" ".join(args.target_atomnames)}').atoms.indices
 
     results = {}
-    for ts in tqdm(u.trajectory[::10]):
+    # for ts in tqdm(u.trajectory[::100]):
+    for ts in u.trajectory[::100]:
         result = fitter(terminal_MO_beads.positions, u.dimensions)
 
         if result is not None:
+            # print(result.params)
             initial_transformed = translations(result.params, u.atoms.positions)
 
             #find the points on the surface
             surface_points = point_generator(np.array(initial_transformed.mean(axis=0))[0], result.params['scale'].value)
+
             if surface_points is not None:
                 # to guarantee we'll have 5000 points for the surface each time
-                cutting = np.linspace(0, surface_points.shape[0] - 1, 5000, dtype=int)
+                cutting = np.linspace(0, surface_points.shape[0] - 1, 100000, dtype=int)
 
                 curvatures, curvature_bins, mids_curvature_bins, point_inds, opstr = curvature_calculation(surface_points,
                                                                                                            initial_transformed,
@@ -70,13 +73,16 @@ def cubic_phase_fitter():
 
                 # translate the data points by the difference between half the lattice parameter and the mean positions
                 # so that the origin of the box is at 0.
-                corrected_data_points = initial_transformed - np.repeat((initial_transformed.mean(axis=0) -
-                                                                        result.params['scale'].value),
-                                                                        len(initial_transformed),
-                                                                        axis=0)
+                # corrected_data_points = initial_transformed + initial_transformed.mean(axis=0) - result.params['scale'].value
+                #+ np.repeat((initial_transformed.mean(axis=0) -
+                                                            #            result.params['scale'].value),
+                                                            #            len(initial_transformed),
+                                                            #            axis=0)
 
                 #translate the surface points in the same way
-                corrected_surface_points = surface_points + surface_points.mean(axis=0)
+                corrected_surface_points = (surface_points + surface_points.mean(axis=0))
+
+                corrected_data_points = initial_transformed - initial_transformed.mean(axis = 0) + corrected_surface_points.mean(axis=0)
 
                 if args.frame_writing:
                     write_frame(corrected_surface_points, corrected_data_points,
