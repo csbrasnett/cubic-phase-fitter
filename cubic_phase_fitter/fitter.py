@@ -46,4 +46,16 @@ def fitter(terminal_positions, dimensions, ncells):
             result = iter_result
             fit_success = True
 
-    return result
+    if fit_success:
+        p_out = {}
+        p_out['trans_a'] = iter_result.params['trans_a']
+        p_out['trans_b'] = iter_result.params['trans_b']
+        p_out['trans_c'] = iter_result.params['trans_c']
+        p_out['rot_a'] = iter_result.params['rot_a']
+        p_out['rot_b'] = iter_result.params['rot_b']
+        p_out['rot_c'] = iter_result.params['rot_c']
+        p_out['scale'] = iter_result.params['scale']
+        C_i_array = fitfunc(p_out, terminal_positions, alt_return=True)
+        return result, C_i_array
+    else:
+        return None, None

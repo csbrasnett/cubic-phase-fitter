@@ -5,6 +5,12 @@ version='0.0.1-alpha'
 dependencies = [
     "pbr",
     "vermouth>=0.9.6",
+    "numpy>=1.26.4",
+    "MDAnalysis @ git+https://github.com/MDAnalysis/mdanalysis.git@develop#subdirectory=package",
+    "tqdm",
+    "scipy",
+    "scikit-image",
+    "lmfit"
     ]
 keywords = ["molecular dynamics", "martini"]
 authors = [{name = "Christopher Brasnett", email="c.s.brasnett@rug.nl"}]
@@ -17,12 +23,6 @@ requires = [
         "wheel",
         "setuptools",
         "pbr",
-        "numpy>=1.26.4",
-        "MDAnalysis",
-        "tqdm",
-        "scipy",
-        "scikit-image",
-        "lmfit"
     ]
 
 [project.scripts]

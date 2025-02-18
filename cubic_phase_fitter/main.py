@@ -12,6 +12,7 @@ import MDAnalysis as mda
 import numpy as np
 from tqdm import tqdm
 import pickle
+from lmfit.model import save_modelresult
 
 from cubic_phase_fitter.curvature import curvature_calculation
 from cubic_phase_fitter.fitter import fitter
@@ -27,6 +28,7 @@ def cubic_phase_fitter():
 
     parser.add_argument('-f', dest="trajectory", type=Path, default='prod.xtc', help="trajectory file to analyse")
     parser.add_argument('-s', dest="topology", type=Path, default='prod.tpr', help="trajectory file to analyse")
+    parser.add_argument('-cut', dest="cut", type=int, default=10, help="trajectory cut step")
     parser.add_argument('-write-frame', dest='frame_writing', action='store_true', default=False,
                         help='write out frame containing fitted surface')
     parser.add_argument('-res', dest='target_resname', type=str, help="target resname of dopant lipid")
@@ -56,9 +58,9 @@ def cubic_phase_fitter():
         terminal_MO_beads = terminal_MO_beads[np.linspace(0,terminal_MO_beads.n_atoms-1, 10000, dtype=int)]
 
     results = {}
-    for ts in u.trajectory[::100]:
-        result = fitter(terminal_MO_beads.positions, u.dimensions, args.ncells)
 
+    for ts in tqdm(u.trajectory[::args.cut]):
+        result, C_i_array = fitter(terminal_MO_beads.positions, u.dimensions)
         if result is not None:
             initial_transformed = translations(result.params, u.atoms.positions)
 

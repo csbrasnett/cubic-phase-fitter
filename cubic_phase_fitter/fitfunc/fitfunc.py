@@ -41,7 +41,7 @@ def D_nodal_approx(x, y, z, lamb):
 
 
 # function to fit the surface to
-def fitfunc(params, pos):
+def fitfunc(params, pos, alt_return=False):
     trans_a = params['trans_a']
     trans_b = params['trans_b']
     trans_c = params['trans_c']
@@ -64,8 +64,8 @@ def fitfunc(params, pos):
                        [0, 1, 0],
                        [-np.sin(rot_b), 0, np.cos(rot_b)]])
 
-    rot_z = np.matrix([[np.cos(rot_c), -np.sin(rot_c), 0]
-                          , [np.sin(rot_c), np.cos(rot_c), 0],
+    rot_z = np.matrix([[np.cos(rot_c), -np.sin(rot_c), 0],
+                       [np.sin(rot_c), np.cos(rot_c), 0],
                        [0, 0, 1]])
 
     rot = rot_z * rot_y * rot_x  # nb! this order matters!
@@ -78,8 +78,10 @@ def fitfunc(params, pos):
                          transformation[1].A[0],
                          transformation[2].A[0],
                          1 / scale)
+    if alt_return:
+        return C_i
+    else:
+        # evaluate how well the function has been fitted
+        C_i_squared = np.square(C_i)
 
-    # evaluate how well the function has been fitted
-    C_i_squared = np.square(C_i)
-
-    return C_i_squared
+        return C_i_squared
