@@ -6,6 +6,17 @@ def write_frame(surface, frame_positions, cutting, point_inds, opstr,
                 resindices, atomnames, resnames, atom_resinds,
                 time):
 
+    # u = Universe.empty(n_atoms=surface.shape[0],
+    #                     n_residues=1,
+    #                     atom_resindex=np.arange(len(surface)),
+    #                     trajectory=True
+    #                     )
+    # u.load_new(surface)
+    # dim = int(max(surface.T[0] - min(surface.T[0])))
+    # u.dimensions = [dim, dim, dim, 90, 90, 90]
+    # ag = u.select_atoms('all')
+    # ag.write('test.gro')
+    print('writing frame')
     sp_final = surface[cutting][point_inds]
 
     all_points = np.array(np.vstack((frame_positions, sp_final)))

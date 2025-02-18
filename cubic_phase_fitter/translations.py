@@ -14,17 +14,17 @@ def translations(result_params, pos):
                                                                                [trans_c]]))
 
     # set up the rotation
-    rot_x = np.matrix([[1, 0, 0],
+    rot_x = np.matrix([[1,             0,              0],
                        [0, np.cos(rot_a), -np.sin(rot_a)],
-                       [0, np.sin(rot_a), np.cos(rot_a)]])
+                       [0, np.sin(rot_a),  np.cos(rot_a)]])
 
-    rot_y = np.matrix([[np.cos(rot_b), 0, np.sin(rot_b)],
-                       [0, 1, 0],
+    rot_y = np.matrix([[ np.cos(rot_b), 0, np.sin(rot_b)],
+                       [0,              1,             0],
                        [-np.sin(rot_b), 0, np.cos(rot_b)]])
 
-    rot_z = np.matrix([[np.cos(rot_c), -np.sin(rot_c), 0]
-                          , [np.sin(rot_c), np.cos(rot_c), 0],
-                       [0, 0, 1]])
+    rot_z = np.matrix([[np.cos(rot_c), -np.sin(rot_c), 0],
+                       [np.sin(rot_c),  np.cos(rot_c), 0],
+                       [0,                          0, 1]])
 
     rot = rot_z * rot_y * rot_x  # nb! this order matters!
 
