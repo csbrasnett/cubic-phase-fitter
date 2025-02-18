@@ -35,7 +35,7 @@ def cubic_phase_fitter():
                               'accepts multiple arguments for beads, eg -aname C4A C4B'))
     parser.add_argument('-curvature', dest='lipid_closest_point', action='store_true', default=False,
                         help='find the closest points on the surface to the input lipid')
-    parser.add_argument('-ncells', dest='ncells', default=1,
+    parser.add_argument('-ncells', dest='ncells', default=1, type=int,
                         help="number of unit cells in one direction to fit for (assumes cubic arrangement)")
 
     args = parser.parse_args()
@@ -53,7 +53,7 @@ def cubic_phase_fitter():
         target_indices = u.select_atoms(f'resname {args.target_resname} and name {" ".join(args.target_atomnames)}').atoms.indices
 
     if args.ncells == 4:
-        terminal_MO_beads = terminal_MO_beads[np.linspace(0,terminal_MO_beads.n_atoms-1, 20000)]
+        terminal_MO_beads = terminal_MO_beads[np.linspace(0,terminal_MO_beads.n_atoms-1, 10000, dtype=int)]
 
     results = {}
     for ts in u.trajectory[::100]:
