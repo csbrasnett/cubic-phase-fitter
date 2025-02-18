@@ -31,9 +31,7 @@ def point_generator(pos, l, ncells):
 
     surf_eq = D_nodal_approx(X, Y, Z, lamb)
     # find vertices on the surface
-    vertices, simplices, normals, values = measure.marching_cubes(surf_eq,0.0, spacing=np.array([10,10,10]))
-
-    vertices = vertices/10
+    vertices, simplices, normals, values = measure.marching_cubes(surf_eq,0.0)
 
     # sort out the vertices and append them to the list of coordinates to write to file
     Xp, Yp, Zp = zip(*vertices)

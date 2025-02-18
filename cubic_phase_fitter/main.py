@@ -60,7 +60,7 @@ def cubic_phase_fitter():
     results = {}
 
     for ts in tqdm(u.trajectory[::args.cut]):
-        result, C_i_array = fitter(terminal_MO_beads.positions, u.dimensions)
+        result, C_i_array = fitter(terminal_MO_beads.positions, u.dimensions, args.ncells)
         if result is not None:
             initial_transformed = translations(result.params, u.atoms.positions)
 
@@ -69,8 +69,9 @@ def cubic_phase_fitter():
                                              args.ncells)
 
             if surface_points is not None:
+                cutting_dict = {1: 5000, 2: 100000, 4: 100000}
                 # to guarantee we'll have 5000 points for the surface each time
-                cutting = np.linspace(0, surface_points.shape[0] - 1, 100000, dtype=int)
+                cutting = np.linspace(0, surface_points.shape[0] - 1, cutting_dict[args.ncells], dtype=int)
 
                 curvatures, curvature_bins, mids_curvature_bins, point_inds, opstr = curvature_calculation(surface_points,
                                                                                                            initial_transformed,
