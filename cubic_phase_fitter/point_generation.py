@@ -6,7 +6,7 @@ def point_generator(pos, l, ncells):
     """
     Generate a D surface based on some input positions
     """
-
+    print('generating surface')
     x_mean, y_mean, z_mean = pos
 
     try:

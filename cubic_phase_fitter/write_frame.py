@@ -16,7 +16,7 @@ def write_frame(surface, frame_positions, cutting, point_inds, opstr,
     # u.dimensions = [dim, dim, dim, 90, 90, 90]
     # ag = u.select_atoms('all')
     # ag.write('test.gro')
-
+    print('writing frame')
     sp_final = surface[cutting][point_inds]
 
     all_points = np.array(np.vstack((frame_positions, sp_final)))

@@ -4,10 +4,11 @@ from string import ascii_lowercase
 from .curvature import curvature
 
 def curvature_calculation(surface_points, initial_transformed, result, cutting, ncells):
+    print('calculating curvatures')
 
     factor = ncells * (result.params['scale'].value/2)
     # translate the surface points so that they're in the correct positions for the curvature calculation
-    curvature_positions = np.array(surface_points + ((initial_transformed.mean(axis=0) - factor )))
+    curvature_positions = np.array(surface_points + (initial_transformed.mean(axis=0) - factor ))
 
     # don't calculate curvature at every single point. every 10 works fine
     # curvatures = np.zeros(0)

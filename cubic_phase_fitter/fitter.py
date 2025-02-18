@@ -7,7 +7,7 @@ def fitter(terminal_positions, dimensions, ncells):
 
     upper_threshold = {1: 1000,
                        2: 15000,
-                       4: 1e6}
+                       4: 100000}
 
     fit_success = False
     counter = 0

@@ -60,7 +60,6 @@ def cubic_phase_fitter():
         result = fitter(terminal_MO_beads.positions, u.dimensions, args.ncells)
 
         if result is not None:
-            # print(result.params)
             initial_transformed = translations(result.params, u.atoms.positions)
 
             #find the points on the surface
