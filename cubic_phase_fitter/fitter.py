@@ -36,7 +36,7 @@ def fitter(terminal_positions, dimensions):
         print(counter, iter_result.residual.sum())
         # print(iter_result.params.valuesdict())
         # if the residual is too low we get a memory error later for some reason
-        if (iter_result.residual.sum() > 15000) or (iter_result.residual.sum() < 20):
+        if (iter_result.residual.sum() > 1e6) or (iter_result.residual.sum() < 20):
             continue
         else:
             result = iter_result

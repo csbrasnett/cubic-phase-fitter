@@ -5,7 +5,7 @@ from .curvature import curvature
 
 def curvature_calculation(surface_points, initial_transformed, result, cutting):
     # translate the surface points so that they're in the correct positions for the curvature calculation
-    curvature_positions = np.array(surface_points + ((initial_transformed.mean(axis=0) - result.params['scale'].value )))
+    curvature_positions = np.array(surface_points + ((initial_transformed.mean(axis=0) - (2*result.params['scale'].value) )))
 
     # don't calculate curvature at every single point. every 10 works fine
     # curvatures = np.zeros(0)

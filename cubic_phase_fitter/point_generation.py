@@ -15,9 +15,9 @@ def point_generator(pos, l):
         # X, Y, Z = np.mgrid[x_mean - (l/2):x_mean + (l/2):(l * 1j),
         #                    y_mean - (l/2):y_mean + (l/2):(l * 1j),
         #                    z_mean - (l/2):z_mean + (l/2):(l * 1j)]
-        X, Y, Z = np.mgrid[x_mean - l:x_mean + l:(l * 2j),
-                           y_mean - l:y_mean + l:(l * 2j),
-                           z_mean - l:z_mean + l:(l * 2j)]
+        X, Y, Z = np.mgrid[x_mean - (2*l):x_mean + (2*l):(l * 4j),
+                           y_mean - (2*l):y_mean + (2*l):(l * 4j),
+                           z_mean - (2*l):z_mean + (2*l):(l * 4j)]
     except MemoryError:
         return None
 
