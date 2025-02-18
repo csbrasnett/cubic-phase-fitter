@@ -3,7 +3,11 @@ from lmfit import Minimizer, Parameters
 import numpy as np
 
 
-def fitter(terminal_positions, dimensions):
+def fitter(terminal_positions, dimensions, ncells):
+
+    upper_threshold = {1: 1000,
+                       2: 15000,
+                       4: 1e6}
 
     fit_success = False
     counter = 0
@@ -36,7 +40,7 @@ def fitter(terminal_positions, dimensions):
         print(counter, iter_result.residual.sum())
         # print(iter_result.params.valuesdict())
         # if the residual is too low we get a memory error later for some reason
-        if (iter_result.residual.sum() > 1e6) or (iter_result.residual.sum() < 20):
+        if (iter_result.residual.sum() > upper_threshold[ncells]) or (iter_result.residual.sum() < 20):
             continue
         else:
             result = iter_result

@@ -3,9 +3,11 @@ from itertools import product
 from string import ascii_lowercase
 from .curvature import curvature
 
-def curvature_calculation(surface_points, initial_transformed, result, cutting):
+def curvature_calculation(surface_points, initial_transformed, result, cutting, ncells):
+
+    factor = ncells * (result.params['scale'].value/2)
     # translate the surface points so that they're in the correct positions for the curvature calculation
-    curvature_positions = np.array(surface_points + ((initial_transformed.mean(axis=0) - (2*result.params['scale'].value) )))
+    curvature_positions = np.array(surface_points + ((initial_transformed.mean(axis=0) - factor )))
 
     # don't calculate curvature at every single point. every 10 works fine
     # curvatures = np.zeros(0)
@@ -24,7 +26,6 @@ def curvature_calculation(surface_points, initial_transformed, result, cutting):
     curvatures = -np.abs(curvatures)
 
     curvature_bins = np.linspace(-0.0012, 0, 50)
-    curvature_bins = np.linspace(curvatures.min(),0,100)
     mids_curvature_bins = (curvature_bins[:-1] + curvature_bins[1:]) / 2
 
     inds = np.digitize(curvatures, curvature_bins)
