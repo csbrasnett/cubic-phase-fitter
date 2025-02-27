@@ -58,10 +58,12 @@ def cubic_phase_fitter():
         terminal_MO_beads = terminal_MO_beads[np.linspace(0,terminal_MO_beads.n_atoms-1, 10000, dtype=int)]
 
     results = {}
-
+    residuals = {}
     for ts in tqdm(u.trajectory[::args.cut]):
         result, C_i_array = fitter(terminal_MO_beads.positions, u.dimensions, args.ncells)
         if result is not None:
+            residuals[int(ts.time)] = C_i_array
+
             initial_transformed = translations(result.params, u.atoms.positions)
 
             #find the points on the surface
@@ -100,6 +102,8 @@ def cubic_phase_fitter():
 
     if args.lipid_closest_point:
         pickle.dump(results, open('results.p', 'wb'))
+
+    pickle.dump(residuals, open('residuals.p', 'wb'))
 
 if __name__ == '__main__':
     cubic_phase_fitter()

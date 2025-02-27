@@ -37,7 +37,7 @@ def fitter(terminal_positions, dimensions, ncells):
         counter += 1
         if counter == 20:
             break
-        print(counter, iter_result.residual.sum())
+        # print(counter, iter_result.residual.sum())
         # print(iter_result.params.valuesdict())
         # if the residual is too low we get a memory error later for some reason
         if (iter_result.residual.sum() > upper_threshold[ncells]) or (iter_result.residual.sum() < 20):
