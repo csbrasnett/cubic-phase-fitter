@@ -31,8 +31,12 @@ def cubic_phase_fitter():
     parser.add_argument('-cut', dest="cut", type=int, default=10, help="trajectory cut step")
     parser.add_argument('-write-frame', dest='frame_writing', action='store_true', default=False,
                         help='write out frame containing fitted surface')
-    parser.add_argument('-res', dest='target_resname', type=str, help="target resname of dopant lipid")
-    parser.add_argument('-aname', dest='target_atomnames', type=str, nargs='*',
+    parser.add_argument('-main-res', dest='main_resname', type=str,
+                        help='name of principal lipid to fit', default='MO')
+    parser.add_argument('-main-atom', dest='main_atomname', type=str,
+                        help='name of terminal carbon of principal lipid', default='C4A')
+    parser.add_argument('-dopant-res', dest='target_resname', type=str, help="target resname of dopant lipid")
+    parser.add_argument('-dopant-atom', dest='target_atomnames', type=str, nargs='*',
                         help=('target atomnames of dopant lipids for curvature distribution.'
                               'accepts multiple arguments for beads, eg -aname C4A C4B'))
     parser.add_argument('-curvature', dest='lipid_closest_point', action='store_true', default=False,
@@ -49,7 +53,7 @@ def cubic_phase_fitter():
     atomnames = u.atoms.names
     atom_resinds = u.residues.resindices
 
-    terminal_MO_beads = u.select_atoms('resname MO and name C4A')
+    terminal_MO_beads = u.select_atoms(f'resname {args.main_resname} and name {args.main_atomname}')
 
     if args.lipid_closest_point:
         target_indices = u.select_atoms(f'resname {args.target_resname} and name {" ".join(args.target_atomnames)}').atoms.indices

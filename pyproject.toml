@@ -10,7 +10,8 @@ dependencies = [
     "tqdm",
     "scipy",
     "scikit-image",
-    "lmfit"
+    "lmfit",
+    "open3d"
     ]
 keywords = ["molecular dynamics", "martini"]
 authors = [{name = "Christopher Brasnett", email="c.s.brasnett@rug.nl"}]
@@ -27,3 +28,4 @@ requires = [
 
 [project.scripts]
 cubicphasefitter = 'cubic_phase_fitter:main.cubic_phase_fitter'
+cubicsurfacegen = 'cubic_phase_fitter:surface_generation.main'
