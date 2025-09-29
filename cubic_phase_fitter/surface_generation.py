@@ -167,33 +167,32 @@ def P_surf_eq(X,Y,Z, lamb):
 
 
 
-def point_generator(l, surface):
+def point_generator(l, surface, ncells):
 
-    eqs = {'D': D_surf_eq,
-           'P': P_surf_eq,
-           'G': G_surf_eq,
-           }
+    surfaces = {'D': {'eq': D_surf_eq,
+                      'factor': 1},
+                'P': {'eq': P_surf_eq,
+                      'factor': 2},
+                'G': {'eq': G_surf_eq,
+                      'factor': 2},
+                }
 
-    #define the mgrid from which to generate the points
-    #not sure why, but D generates an actual unit cell over the
-    #0:1l range in 3D, but P and G need 0:2l
+    # define the mgrid from which to generate the points
+    # not sure why, but D generates an actual unit cell over the
+    # 0:1l range in 3D, but P and G need 0:2l
+    n = ncells * surfaces[surface]['factor']
+    nj = 1j * ncells * surfaces[surface]['factor']
+    grid = np.mgrid[
+        slice(0, n * l, l * nj),
+        slice(0, n * l, l * nj),
+        slice(0, n * l, l * nj)
+    ]
 
-    meshes = {'D':np.mgrid[0:4*l:(l * 1j),
-                           0:4*l:(l * 1j),
-                           0:4*l:(l * 1j)],
-              'P':np.mgrid[0:8*l:(l * 2j),
-                           0:8*l:(l * 2j),
-                           0:8*l:(l * 2j)],
-              'G':np.mgrid[0:8*l:(l * 2j),
-                           0:8*l:(l * 2j),
-                           0:8*l:(l * 2j)],
-              }
+    X, Y, Z = grid
 
-    X,Y,Z = meshes[surface]
+    lamb = 1 / l
 
-    lamb = 1/l
-
-    surf_eq = eqs[surface](X, Y, Z, lamb)
+    surf_eq = surfaces[surface]['eq'](X, Y, Z, lamb)
 
     #find vertices on the surface
     vertices, simplices,normals, values = measure.marching_cubes(surf_eq,
@@ -213,6 +212,7 @@ def read_arguments():
     parser = argparse.ArgumentParser(description='Generate a .stl file of a TPMS of given size and symmetry')
     parser.add_argument("-l",type=int,help='Lattice parameter of cubic surface', required=True)
     parser.add_argument("-t",type=str,help='Topology of TPMS. Must be one of: "D" (Diamond), "G" (Gyroid), or "P" (Primitive)', required=True)
+    parser.add_argument("-c",type=int,help='Number of unit cells to generate', required=True, default=1)
     parser.add_argument("-n",type=int, help='Number of triangles to output into the mesh', default = 200, required=False)
     parser.add_argument("-op",type=bool, help='Output points file for quick inspection', required=False)
     parser.add_argument("-os",type=str,help='Output stl file', required=False, default='mesh.stl')
