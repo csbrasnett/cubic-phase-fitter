@@ -208,7 +208,7 @@ def point_generator(l, surface, ncells):
 #Function to read the arguments
 def read_arguments():
     parser = argparse.ArgumentParser(description='Generate a .stl file of a TPMS of given size and symmetry')
-    parser.add_argument("-l",type=int,help='Lattice parameter of cubic surface', required=True)
+    parser.add_argument("-l",type=int,help='Lattice parameter of cubic surface in Angstroms', required=True)
     parser.add_argument("-t",type=str,help='Topology of TPMS. Must be one of: "D" (Diamond), "G" (Gyroid), or "P" (Primitive)', required=True)
     parser.add_argument("-c",type=int,help='Number of unit cells to generate', required=True, default=1)
     parser.add_argument("-n",type=int, help='Number of triangles to output into the mesh', default = 200, required=False)
