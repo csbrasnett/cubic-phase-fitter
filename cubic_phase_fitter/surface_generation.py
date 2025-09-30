@@ -160,11 +160,9 @@ def P_surf_eq(X,Y,Z, lamb):
 
     term5=0.0027*(permE1(3,0,0,X,Y,Z,lamb)+permO1(3,0,0,X,Y,Z,lamb))
 
-
     surf_eq = term1+term2-term3-term4-term5
 
     return surf_eq
-
 
 
 def point_generator(l, surface, ncells):
@@ -239,10 +237,10 @@ def main():
 
     print(f'Will generate a {args.t} surface with lattice parameter {args.l}')
     print('generating points')
-    b = point_generator(args.l, str(args.t))
+    b = point_generator(args.l, str(args.t), args.c)
     a = b[0][::1]
 
-    if args.op == True:
+    if args.op:
         points_out(a)
 
     print('generating mesh')
@@ -258,4 +256,3 @@ def main():
 
     o3d.io.write_triangle_mesh(args.os, dec_mesh)
     print('all done!')
-
